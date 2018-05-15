@@ -2,14 +2,18 @@ using System;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Collections.Generic;
+using Wallet.Components;
 
 namespace Wallet
 {
     public class Page : IPage
     {
+        private List<Component> components = new List<Component>();
         private readonly WalletOptions walletOptions;
-        private string buffer;
-        public char[] cbuffer;
+      
+        public char[] buffer;
+        private (ConsoleColor foreground, ConsoleColor background)[] colourBuffer;
 
         public Page(WalletOptions walletOptions)
         {
@@ -18,35 +22,50 @@ namespace Wallet
 
         public virtual async Task<object> RunAsync()
         {
-            await Task.Run(()=>
+            await Task.Run(() =>
             {
                 //Console.BufferWidth = 200;
                 Console.BufferWidth = Console.WindowWidth;
                 var i = 1;
                 Console.BufferHeight = Console.WindowHeight;
                 Console.CursorVisible = false;
-               // Console.OutputEncoding = System.Text.Encoding.UTF8;
-                this.buffer = "";
-                this.cbuffer = new char[Console.WindowWidth * (Console.WindowHeight-1)];
-                for (int j = 0; j < Console.WindowWidth *  (Console.WindowHeight-1); j++)
+                // Console.OutputEncoding = System.Text.Encoding.UTF8;
+              
+                buffer = new char[Console.WindowWidth * (Console.WindowHeight - 1)];
+                colourBuffer = new (ConsoleColor, ConsoleColor)[Console.WindowWidth * (Console.WindowHeight - 1)];
+                for (int j = 0; j < buffer.Length; j++)
                 {
-                    this.cbuffer[j] = ' ';
+                    this.buffer[j] = ' ';
+                    this.colourBuffer[j] = (this.walletOptions.Style.Foreground, this.walletOptions.Style.Background);
                 }
 
                 Console.BackgroundColor = this.walletOptions.Style.Background;
                 Console.Clear();
                 var text = "";
 
-                while(true)
+                components.Add(new TextBlockComponent() { Text = "NANO Console Wallet", PositionX = 5, PositionY = 5});
+                components.Add(new TextBlockComponent() 
+                { 
+                    Text = "Custom colour", 
+                    PositionX = 5, 
+                    PositionY = 6, 
+                    StyleOverride = new Style{
+                        Background = ConsoleColor.Red,
+                        Foreground = ConsoleColor.Black
+                    }
+                });
+                
+                while (true)
                 {
+                    RenderComponents();
                     // Update the element positions
                     //Console.WriteLine(Console.WindowLeft);
                     //Console.BufferHeight = Console.WindowHeight;
-                    var widthPerPercent = Console.BufferWidth / 100f;                    
-                    var progressWidth = (int)Math.Floor(widthPerPercent * (i % 100));                    
+                    var widthPerPercent = Console.BufferWidth / 100f;
+                    var progressWidth = (int)Math.Floor(widthPerPercent * (i % 100));
 
-                    buffer =  new String('█', progressWidth);
-                    buffer += new String(' ', Console.BufferWidth - progressWidth);
+                    // buffer = new String('█', progressWidth);
+                    // buffer += new String(' ', Console.BufferWidth - progressWidth);
                     // cbuffer[0] = (i % 10).ToString()[0];
                     // cbuffer[1] = '█';
 
@@ -69,6 +88,14 @@ namespace Wallet
             return null;
         }
 
+        public void RenderComponents()
+        {
+            foreach (var component in components)
+            {
+                component.Render(buffer, colourBuffer, Console.BufferWidth, this.walletOptions.Style);
+            }
+        }
+
         public void DrawBuffer()
         {
             //Console.Clear();
@@ -76,9 +103,15 @@ namespace Wallet
             Console.BackgroundColor = this.walletOptions.Style.Background;
             Console.ForegroundColor = this.walletOptions.Style.Accent;
 
-           
-                //Console.Write(buffer);
-           Console.Out.Write(buffer);
+            for (int i = 0; i < buffer.Length; i++)
+            {
+                Console.ForegroundColor = colourBuffer[i].foreground;
+                Console.BackgroundColor = colourBuffer[i].background;
+                Console.Out.Write(buffer[i]);
+            }
+
+            //Console.Write(buffer);
+            //Console.Out.Write(buffer);
         }
     }
 }

@@ -12,7 +12,6 @@ namespace Wallet
             };
             var page = new Page(options);
             await page.RunAsync();
-            Console.WriteLine("Hello World!");
         }
     }
 }
