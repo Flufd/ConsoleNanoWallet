@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-namespace Wallet
+namespace ConsoleNanoWallet
 {
     class Program
     {

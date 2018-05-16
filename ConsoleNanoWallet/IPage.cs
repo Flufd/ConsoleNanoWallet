@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace Wallet
+namespace ConsoleNanoWallet
 {
     public interface IPage
     {

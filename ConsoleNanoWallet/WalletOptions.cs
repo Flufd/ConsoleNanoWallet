@@ -1,4 +1,4 @@
-namespace Wallet
+namespace ConsoleNanoWallet
 {
     public class WalletOptions
     {
