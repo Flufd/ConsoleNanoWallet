@@ -6,4 +6,8 @@
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="QRCoder" Version="1.3.3" />
+  </ItemGroup>
+
 </Project>

@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Wallet.Components;
+using QRCoder;
 
 namespace Wallet
 {
@@ -94,6 +95,48 @@ namespace Wallet
             {
                 component.Render(buffer, colourBuffer, Console.BufferWidth, this.walletOptions.Style);
             }
+
+            QRCodeGenerator qrGenerator = new QRCodeGenerator();
+            QRCodeData qrCodeData = qrGenerator.CreateQrCode("The text which should be encoded.", QRCodeGenerator.ECCLevel.L);
+            AsciiQRCode qrCode = new AsciiQRCode(qrCodeData);
+           var lines = qrCode.GetLineByLineGraphic(1);
+            for (int r = 0; r < lines.Length; r++)
+            {
+                 buffer[r * Console.BufferWidth] = r.ToString()[0];
+                 for (int j = 0; j < lines[r].Length; j+=2)
+                 {
+                     if(lines[r][j] == '█')
+                     {
+                         if(lines.Length > r+1 && lines[r+1][j] == '█')
+                         {
+                             buffer[r/2 *Console.BufferWidth + j/2] = '█';
+                         }
+                         else{
+                             buffer[r/2*Console.BufferWidth + j/2] = '▀'; 
+                         }
+                     }
+                     if(lines[r][j] == ' ')
+                     {
+                         if(lines.Length > r+1 && lines[r+1][j] == ' ')
+                         {
+                             buffer[r/2 *Console.BufferWidth + j/2] = ' ';
+                         }
+                         else{
+                             buffer[r/2*Console.BufferWidth + j/2] = '▄'; 
+                         }
+                     }
+                 }
+                 r++;
+
+            }
+            // string qrCodeAsAsciiArt = qrCode.GetGraphic(1);//.Replace("\n","");
+            // for (int i = 0; i < qrCodeAsAsciiArt.Length; i++)
+            // {           
+            //     if(10*80 + i < buffer.Length)  {
+
+            //     buffer[i] = '▀';//qrCodeAsAsciiArt[i];
+            //     }
+            // }
         }
 
         public void DrawBuffer()
