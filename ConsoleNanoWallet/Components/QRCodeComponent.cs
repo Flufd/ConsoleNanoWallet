@@ -21,7 +21,7 @@ namespace ConsoleNanoWallet.Components
                 content = value;
                 using(var qrGenerator = new QRCodeGenerator())
                 {
-                    qrCodeData = qrGenerator.CreateQrCode(Content ?? "", QRCodeGenerator.ECCLevel.M);
+                    qrCodeData = qrGenerator.CreateQrCode(Content ?? "", QRCodeGenerator.ECCLevel.H);
                 }
             }
         }
@@ -30,7 +30,7 @@ namespace ConsoleNanoWallet.Components
         public override void Render(StyledCharacter[] buffer, Style style)
         {
             // We have a 2d array of bits, we can render them with the characters █ ▀ ▄ and space by reading them two rows at a time
-            
+            style = StyleOverride ?? style;
             // Loop rows
             for (int y = 0; y < qrCodeData.ModuleMatrix.Count; y++)
             {

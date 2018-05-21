@@ -49,18 +49,26 @@ namespace ConsoleNanoWallet
                 components.Add(new QRCodeComponent
                 {
                     Content = "Hi",
-                    PositionX = 2,
+                    PositionX = 20,
                     PositionY = 4,
-                    StyleOverride = new Style(ConsoleColor.Black , ConsoleColor.White)
+                    StyleOverride = new Style(ConsoleColor.Red , ConsoleColor.White)
                 });
                 
                 while (true)
-                {   
+                {
+                    // Update the draw buffer to the size of the console
+                    buffer = new StyledCharacter[Console.WindowWidth * (Console.WindowHeight - 1)];
+                    // Initialize buffer
+                    for (int j = 0; j < buffer.Length; j++)
+                    {
+                        this.buffer[j] = new StyledCharacter(' ', walletOptions.Style.Foreground, walletOptions.Style.Background);
+                    }
+
                     RenderComponents();
 
                     DrawBuffer();
 
-                    Thread.Sleep(30);
+                    Thread.Sleep(10);
                     drawCount++;
                 }
             });
@@ -79,14 +87,36 @@ namespace ConsoleNanoWallet
         public void DrawBuffer()
         {
             Console.SetCursorPosition(0, 0);
+            Console.CursorVisible = false;
             Console.BackgroundColor = walletOptions.Style.Background;
             Console.ForegroundColor = walletOptions.Style.Accent;
 
+            var drawStrings = new List<(string content, Style style)>();
+
+            var current = (content: "", walletOptions.Style);
             for (int i = 0; i < buffer.Length; i++)
             {
-                Console.ForegroundColor = buffer[i].Style.Foreground;
-                Console.BackgroundColor = buffer[i].Style.Background;
-                Console.Out.Write(buffer[i].Character);
+                if(current.Style == buffer[i].Style)
+                {
+                    current.content += buffer[i].Character;
+                    //Console.ForegroundColor = buffer[i].Style.Foreground;
+                    //Console.BackgroundColor = buffer[i].Style.Background;
+                    //Console.Out.Write(buffer[i].Character);
+                }
+                else
+                {
+                    drawStrings.Add(current);
+                    current = (content: "" + buffer[i].Character, buffer[i].Style);
+                }
+
+            }
+            drawStrings.Add(current);
+
+            foreach (var drawString in drawStrings)
+            {
+                Console.ForegroundColor = drawString.style.Foreground;
+                Console.BackgroundColor = drawString.style.Background;
+                Console.Out.Write(drawString.content);
             }
         }
     }
