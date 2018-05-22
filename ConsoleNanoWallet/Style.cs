@@ -4,23 +4,27 @@ namespace ConsoleNanoWallet
 {
     public struct Style
     {
-        public Style(ConsoleColor foreground, ConsoleColor background, ConsoleColor accent)
+        public Style(ConsoleColor foreground, ConsoleColor background, ConsoleColor accentBackground, ConsoleColor accentForeground)
         {
             Foreground = foreground;
             Background = background;
-            Accent = accent;
+            AccentBackground = accentBackground;
+            AccentForeground = accentForeground;
+
         }
 
         public Style(ConsoleColor foreground, ConsoleColor background)
         {
             Foreground = foreground;
             Background = background;
-            Accent = ConsoleColor.White;
+            AccentBackground = ConsoleColor.White;
+            AccentForeground = ConsoleColor.Black;
         }
 
         public ConsoleColor Foreground { get; set; }
         public ConsoleColor Background { get; set; }
-        public ConsoleColor Accent { get; set; }
+        public ConsoleColor AccentBackground { get; set; }
+        public ConsoleColor AccentForeground { get; set; }
 
         public override bool Equals(object obj)
         {

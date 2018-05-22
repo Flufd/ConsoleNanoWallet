@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ConsoleNanoWallet.Pages;
+using System;
 using System.Threading.Tasks;
 namespace ConsoleNanoWallet
 {
@@ -8,10 +9,23 @@ namespace ConsoleNanoWallet
         {
             var options = new WalletOptions
             {
-                Style = new Style { Foreground = ConsoleColor.Blue, Background = ConsoleColor.White, Accent = ConsoleColor.DarkBlue }
+                Style = new Style
+                {
+                    Foreground = ConsoleColor.Blue,
+                    Background = ConsoleColor.White,
+                    AccentBackground = ConsoleColor.DarkBlue,
+                    AccentForeground = ConsoleColor.White
+                }
             };
-            var page = new Page(options);
-            await page.RunAsync();
+            var communicationService = new CommunicationService();
+
+            using (var page = new AccountPage(options, communicationService))
+            {
+                Task.Run(communicationService.Init);
+                await page.RunAsync();
+            }
         }
+
+
     }
 }
