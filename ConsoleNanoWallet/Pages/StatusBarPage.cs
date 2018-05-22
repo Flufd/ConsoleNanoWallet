@@ -9,12 +9,11 @@ namespace ConsoleNanoWallet.Pages
     {
         private StatusBarComponent statusBarComponent;
 
-        public StatusBarPage(WalletOptions walletOptions, CommunicationService communicationService) : base(walletOptions, communicationService)
+        public StatusBarPage(WalletOptions walletOptions) : base(walletOptions)
         {
             statusBarComponent = new StatusBarComponent();
             components.Add(statusBarComponent);
 
-            this.communicationService.ReceivedExchangeRateEvent += CommunicationService_ReceivedExchangeRateEvent;
         }
 
         private void CommunicationService_ReceivedExchangeRateEvent(object sender, WebsocketEvents.NanoEventArgs<WebsocketEvents.ExchangeRateEvent> e)
@@ -25,7 +24,6 @@ namespace ConsoleNanoWallet.Pages
         public override void Dispose()
         {
             base.Dispose();
-            this.communicationService.ReceivedExchangeRateEvent -= CommunicationService_ReceivedExchangeRateEvent;
         }
     }
 }

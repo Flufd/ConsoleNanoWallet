@@ -9,7 +9,7 @@ namespace ConsoleNanoWallet.Pages
 {
     public class TestPage : Page
     {
-        public TestPage(WalletOptions walletOptions, CommunicationService communicationService) : base(walletOptions, communicationService)
+        public TestPage(WalletOptions walletOptions) : base(walletOptions)
         {
             components.Add(new TextBlockComponent
             {

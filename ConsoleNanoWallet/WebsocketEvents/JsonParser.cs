@@ -29,6 +29,7 @@ namespace ConsoleNanoWallet.WebsocketEvents
             AddModel<AccountHistoryEvent>();
             AddModel<AccountHistoryWithPreviousEvent>();
             AddModel<WorkEvent>();
+            AddModel<BlockEvent>();
         }
 
         private JsonSerializerSettings jsonSerializerSettings = new JsonSerializerSettings

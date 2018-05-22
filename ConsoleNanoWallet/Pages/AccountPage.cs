@@ -8,7 +8,7 @@ namespace ConsoleNanoWallet.Pages
 {
     public class AccountPage : StatusBarPage
     {
-        public AccountPage(WalletOptions walletOptions, CommunicationService communicationService) : base(walletOptions, communicationService)
+        public AccountPage(WalletOptions walletOptions ) : base(walletOptions)
         {
         }
 
@@ -18,7 +18,7 @@ namespace ConsoleNanoWallet.Pages
             {
                 if(Console.ReadKey().Key == ConsoleKey.A)
                 {
-                    using(var t = new TestPage(walletOptions, communicationService))
+                    using(var t = new TestPage(walletOptions))
                     {
                         await t.RunAsync();
                     }

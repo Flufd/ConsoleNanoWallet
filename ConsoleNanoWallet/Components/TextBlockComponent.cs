@@ -4,7 +4,7 @@ namespace ConsoleNanoWallet.Components
 {
     public class TextBlockComponent : Component
     {
-        public string Text { get; set; }
+        public string Text { get; set; } = "";
         public override void Render(StyledCharacter[] buffer, Style style)
         {
             if(this.StyleOverride != null)

@@ -17,11 +17,10 @@ namespace ConsoleNanoWallet
                     AccentForeground = ConsoleColor.White
                 }
             };
-            var communicationService = new CommunicationService();
+           
 
-            using (var page = new AccountPage(options, communicationService))
-            {
-                Task.Run(communicationService.Init);
+            using (var page = new MainMenuPage(options))
+            {               
                 await page.RunAsync();
             }
         }

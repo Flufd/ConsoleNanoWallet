@@ -1,7 +1,9 @@
 ﻿using ConsoleNanoWallet.WebsocketEvents;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
@@ -11,13 +13,16 @@ namespace ConsoleNanoWallet
 {
     public class CommunicationService
     {
-        public CommunicationService()
+        public CommunicationService(string address)
         {
             jsonParser = new JsonParser();
+            this.Address = address;
         }
 
         private ClientWebSocket webSocket;
         private readonly JsonParser jsonParser;
+
+        public string Address { get; set; }
 
         public async Task Init()
         {
@@ -26,17 +31,21 @@ namespace ConsoleNanoWallet
                 webSocket = new ClientWebSocket();
                 await webSocket.ConnectAsync(new Uri($"wss://light.nano.org"), CancellationToken.None);
 
-            WalletStartComplete?.Invoke(this, new EventArgs());
+                WalletStartComplete?.Invoke(this, new EventArgs());
 
-            try
-            {
-                await ReceiveData().ConfigureAwait(false);
-            }
-            catch (Exception e)
-            {
+                var json = JsonConvert.SerializeObject(new { account = this.Address, action = "account_subscribe", currency = "USD" }, Formatting.None);
+                var bytes = Encoding.UTF8.GetBytes(json);
+                await webSocket.SendAsync(new ArraySegment<byte>(bytes), WebSocketMessageType.Text, true, CancellationToken.None);
+
+                try
+                {
+                    await ReceiveData().ConfigureAwait(false);
+                }
+                catch (Exception e)
+                {
                     // TODO: log error or something
-                break;
-            }
+                    break;
+                }
             }
         }
 
@@ -79,17 +88,20 @@ namespace ConsoleNanoWallet
             {
                 switch (walletEvent)
                 {
-                    case ExchangeRateEvent typedEvent:
-                        ReceivedExchangeRateEvent?.Invoke(this, new NanoEventArgs<ExchangeRateEvent>(typedEvent));
+                    case ExchangeRateEvent exchangeRateEvent:
+                        ReceivedExchangeRateEvent?.Invoke(this, new NanoEventArgs<ExchangeRateEvent>(exchangeRateEvent));
                         break;
-                    case AccountSummaryEvent typedEvent:
-                        ReceivedAccountSummaryEvent?.Invoke(this, new NanoEventArgs<AccountSummaryEvent>(typedEvent));
+                    case AccountSummaryEvent accountSummaryEvent:
+                        ReceivedAccountSummaryEvent?.Invoke(this, new NanoEventArgs<AccountSummaryEvent>(accountSummaryEvent));
                         break;
-                    case AccountHistoryEvent typedEvent:
-                        ReceivedAccountHistoryEvent?.Invoke(this, new NanoEventArgs<AccountHistoryEvent>(typedEvent));
+                    case AccountHistoryEvent accountHistoryEvent:
+                        ReceivedAccountHistoryEvent?.Invoke(this, new NanoEventArgs<AccountHistoryEvent>(accountHistoryEvent));
                         break;
-                    case WorkEvent typedEvent:
-                        ReceivedWorkEvent?.Invoke(this, new NanoEventArgs<WorkEvent>(typedEvent));
+                    case WorkEvent workEvent:
+                        ReceivedWorkEvent?.Invoke(this, new NanoEventArgs<WorkEvent>(workEvent));
+                        break;
+                    case BlockEvent blockEvent:
+                        ReceivedBlockEvent?.Invoke(this, new NanoEventArgs<BlockEvent>(blockEvent));
                         break;
                     default:
                         break;
@@ -101,6 +113,7 @@ namespace ConsoleNanoWallet
         public event EventHandler<NanoEventArgs<AccountSummaryEvent>> ReceivedAccountSummaryEvent;
         public event EventHandler<NanoEventArgs<AccountHistoryEvent>> ReceivedAccountHistoryEvent;
         public event EventHandler<NanoEventArgs<WorkEvent>> ReceivedWorkEvent;
+        public event EventHandler<NanoEventArgs<BlockEvent>> ReceivedBlockEvent;
         public event EventHandler<EventArgs> WalletStartComplete;
     }
 }

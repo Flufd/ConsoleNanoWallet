@@ -14,38 +14,12 @@ namespace ConsoleNanoWallet.Pages
     {
         protected List<Component> components = new List<Component>();
         protected readonly WalletOptions walletOptions;
-        protected readonly CommunicationService communicationService;
         public StyledCharacter[] buffer;
         protected CancellationToken cancellationToken;
 
-        public Page(WalletOptions walletOptions, CommunicationService communicationService)
+        public Page(WalletOptions walletOptions)
         {
             this.walletOptions = walletOptions;
-            this.communicationService = communicationService;
-
-            
-
-            //components.Add(new QRCodeComponent
-            //{ 
-            //    Content = "Hi",
-            //    PositionX = 20,
-            //    PositionY = 4,
-            //    StyleOverride = new Style(ConsoleColor.Red, ConsoleColor.White)
-            //});
-
-            this.communicationService.WalletStartComplete += CommunicationService_WalletStartComplete;
-
-            this.communicationService.ReceivedExchangeRateEvent += CommunicationService_ReceivedExchangeRateEvent;
-        }
-
-        private void CommunicationService_ReceivedExchangeRateEvent(object sender, NanoEventArgs<ExchangeRateEvent> e)
-        {
-
-        }
-
-        private void CommunicationService_WalletStartComplete(object sender, EventArgs e)
-        {
-
         }
 
         public virtual async Task<object> RunAsync()
@@ -100,7 +74,7 @@ namespace ConsoleNanoWallet.Pages
 
         }
 
-        public void RenderComponents()
+        public virtual void RenderComponents()
         {
             foreach (var component in components)
             {
@@ -156,8 +130,7 @@ namespace ConsoleNanoWallet.Pages
 
         public virtual void Dispose()
         {
-            this.communicationService.ReceivedExchangeRateEvent -= CommunicationService_ReceivedExchangeRateEvent;
-            this.communicationService.WalletStartComplete -= CommunicationService_WalletStartComplete;
+           
         }
     }
 }
